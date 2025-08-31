@@ -27,7 +27,7 @@ const ScrollToTop: React.FC = () => {
 
 const App = () => {
   return (
-    <Router basename="/OraczewskiSite">
+    <Router>
       <Header />
       <ScrollToTop />
       <Routes>
