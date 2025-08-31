@@ -99,5 +99,5 @@ app.delete("/api/photos/delete/:public_id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Serwer działa na http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
