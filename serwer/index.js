@@ -1,39 +1,43 @@
-// index.js
-import express from "express";
-import cors from "cors";
-import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-import dotenv from "dotenv";
+// serwer/index.js
+const express = require("express");
+const cors = require("cors");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config(); // wczytuje zmienne środowiskowe z Render lub .env
 
-dotenv.config();
-
+// Tworzymy aplikację Express
 const app = express();
+
+// Port Render ustawia w process.env.PORT
 const PORT = process.env.PORT || 5000;
 
-// CORS – dozwolone frontend URL-e
+// Middleware
+app.use(express.json());
+
+// CORS — dopuszczamy Twój frontend
 app.use(
   cors({
-    origin: [
-      "https://oraczewskisitefinal-1.onrender.com", // Twój frontend na Render
-      "http://localhost:3000", // lokalny frontend
-    ],
-    credentials: true,
+    origin: ["https://oraczewskisitefinal-1.onrender.com"], // Twój frontend na Render
+    credentials: true, // jeśli używasz cookies lub auth
   })
 );
 
-app.use(express.json());
-
-// Zmienne środowiskowe – ustaw w Render
+// Zmienne środowiskowe
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
+// Konfiguracja Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Endpoint logowania
+// Konfiguracja multer (upload pamięciowy)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// ENDPOINT: logowanie admina
 app.post("/api/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
@@ -43,11 +47,7 @@ app.post("/api/admin/login", (req, res) => {
   }
 });
 
-// Konfiguracja multer do uploadu plików
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
-// Upload zdjęcia
+// ENDPOINT: upload zdjęcia
 app.post("/api/photos/upload", upload.single("photo"), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: "Brak pliku" });
 
@@ -74,7 +74,7 @@ app.post("/api/photos/upload", upload.single("photo"), async (req, res) => {
   }
 });
 
-// Lista zdjęć
+// ENDPOINT: lista zdjęć
 app.get("/api/photos/list", async (req, res) => {
   try {
     const result = await cloudinary.api.resources({
@@ -94,7 +94,7 @@ app.get("/api/photos/list", async (req, res) => {
   }
 });
 
-// Usuwanie zdjęcia
+// ENDPOINT: usuwanie zdjęcia
 app.delete("/api/photos/delete/:public_id", async (req, res) => {
   try {
     const publicId = decodeURIComponent(req.params.public_id);
@@ -115,7 +115,7 @@ app.delete("/api/photos/delete/:public_id", async (req, res) => {
   }
 });
 
-// Start serwera
-app.listen(PORT, "0.0.0.0", () => {
+// START serwera
+app.listen(PORT, () => {
   console.log(`Serwer działa na porcie ${PORT}`);
 });
