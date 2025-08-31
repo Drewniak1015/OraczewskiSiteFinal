@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_URL } from "../config";
 
 interface Photo {
   url: string;
@@ -18,11 +19,11 @@ export default function OraczewskiMoment() {
 
   const fetchFiles = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/photos/list");
+      const res = await fetch(`${API_URL}/api/photos/list`);
       const data: Photo[] = await res.json();
       setFiles(data);
     } catch (err) {
-      console.error(err);
+      console.error("Błąd pobierania zdjęć:", err);
     }
   };
 
@@ -42,11 +43,12 @@ export default function OraczewskiMoment() {
   const handleUpload = async () => {
     if (!selectedFile) return alert("Wybierz plik!");
     setLoading(true);
+
     const formData = new FormData();
     formData.append("photo", selectedFile);
 
     try {
-      const res = await fetch("http://localhost:5000/api/photos/upload", {
+      const res = await fetch(`${API_URL}/api/photos/upload`, {
         method: "POST",
         body: formData,
       });
@@ -56,7 +58,7 @@ export default function OraczewskiMoment() {
         fetchFiles();
       } else alert("Błąd dodawania zdjęcia");
     } catch (err) {
-      console.error(err);
+      console.error("Błąd uploadu:", err);
     } finally {
       setLoading(false);
     }
@@ -65,17 +67,16 @@ export default function OraczewskiMoment() {
   const handleDelete = async (publicId: string) => {
     if (!confirm("Czy na pewno chcesz usunąć to zdjęcie?")) return;
     setLoading(true);
+
     try {
       const res = await fetch(
-        `http://localhost:5000/api/photos/delete/${encodeURIComponent(
-          publicId
-        )}`,
+        `${API_URL}/api/photos/delete/${encodeURIComponent(publicId)}`,
         { method: "DELETE" }
       );
       if (res.ok) fetchFiles();
       else alert("Nie udało się usunąć zdjęcia");
     } catch (err) {
-      console.error(err);
+      console.error("Błąd usuwania:", err);
     } finally {
       setLoading(false);
     }
@@ -83,7 +84,7 @@ export default function OraczewskiMoment() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">CMS zdjęć</h1>
+      <h1 className="text-3xl font-bold mb-6">OraczewskiMoment - CMS zdjęć</h1>
       <button
         onClick={handleLogout}
         className="bg-red-500 text-white px-4 py-2 rounded"
@@ -91,11 +92,11 @@ export default function OraczewskiMoment() {
         Wyloguj
       </button>
 
-      <div className="mb-6 flex flex-col sm:flex-row items-center gap-4 p-4 m-4 border rounded">
+      <div className="mb-6 flex flex-col sm:flex-row items-center gap-4 border-1 border-black p-4 m-4">
         <input
           type="file"
           onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
-          className="border p-2 rounded-md cursor-pointer"
+          className="border-1 border-black p-4 bg-black text-white rounded-md cursor-pointer"
         />
         <button
           onClick={handleUpload}

@@ -1,25 +1,29 @@
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
+// index.js
+import express from "express";
+import cors from "cors";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
 
-// Tworzymy aplikację Express
+dotenv.config();
+
 const app = express();
-
-// Port Render ustawia w process.env.PORT
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-// Tutaj wpisz URL swojego frontendu na Render/GitHub Pages
+// CORS – dozwolone frontend URL-e
 app.use(
   cors({
-    origin: ["https://twoj-frontend.onrender.com", "http://localhost:3000"],
+    origin: [
+      "https://oraczewskisitefinal-1.onrender.com", // Twój frontend na Render
+      "http://localhost:3000", // lokalny frontend
+    ],
     credentials: true,
   })
 );
+
 app.use(express.json());
 
-// Zmienne środowiskowe (dodaj w panelu Render)
+// Zmienne środowiskowe – ustaw w Render
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -39,7 +43,7 @@ app.post("/api/admin/login", (req, res) => {
   }
 });
 
-// Konfiguracja multer
+// Konfiguracja multer do uploadu plików
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 

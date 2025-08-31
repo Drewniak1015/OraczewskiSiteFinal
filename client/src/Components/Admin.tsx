@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
@@ -14,7 +15,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/admin/login", {
+      const res = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -23,10 +24,10 @@ const AdminLogin = () => {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("adminToken", data.token || "true");
         navigate("/panel");
       } else setError(data.message || "Niepoprawny login lub hasło");
-    } catch (err) {
+    } catch {
       setError("Błąd serwera. Spróbuj ponownie później.");
     } finally {
       setLoading(false);
@@ -57,7 +58,6 @@ const AdminLogin = () => {
               required
             />
           </div>
-
           <div>
             <label className="block font-semibold mb-1">Hasło</label>
             <input
@@ -69,9 +69,7 @@ const AdminLogin = () => {
               required
             />
           </div>
-
           {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-
           <button
             type="submit"
             className={`w-full py-2 rounded-lg text-white ${

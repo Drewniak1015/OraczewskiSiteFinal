@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
+import { API_URL } from "../config";
 
 type RoomCategory = "Bedroom" | "Living Room" | "Restroom" | "Kitchen";
 
@@ -12,7 +13,9 @@ interface Photo {
 
 const containerVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } },
+  visible: {
+    transition: { staggerChildren: 0.15 },
+  },
 };
 
 const photoVariants: Variants = {
@@ -35,11 +38,12 @@ const Portfolio = () => {
     const fetchPhotos = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5000/api/photos/list");
+        const response = await fetch(`${API_URL}/api/photos/list`);
         if (!response.ok) throw new Error("Błąd pobierania zdjęć");
         const data: Photo[] = await response.json();
         setPhotos(data);
       } catch (err: any) {
+        console.error(err);
         setError(err.message || "Coś poszło nie tak");
       } finally {
         setLoading(false);
@@ -51,11 +55,10 @@ const Portfolio = () => {
 
   return (
     <div className="w-full bg-[#faf9f6] flex justify-center pb-16">
-      <div className="max-w-[82.5rem] flex flex-col items-center px-4">
+      <div className="max-w-[82.5rem] flex flex-col items-center font-family-Geologica px-4">
         <h1 className="uppercase text-black mt-16 text-4xl sm:text-5xl md:text-6xl">
           portfolio
         </h1>
-
         {loading ? (
           <p className="mt-16 text-gray-600">Ładowanie zdjęć...</p>
         ) : error ? (
