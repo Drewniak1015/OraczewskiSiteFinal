@@ -119,6 +119,7 @@ const Home = () => {
             We do construction services in all Bay Area
           </motion.p>
 
+
           <motion.button
             variants={fadeUp}
             initial="hidden"
