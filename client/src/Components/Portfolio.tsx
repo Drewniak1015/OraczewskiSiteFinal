@@ -12,9 +12,7 @@ interface Photo {
 
 const containerVariants: Variants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.15 },
-  },
+  visible: { transition: { staggerChildren: 0.15 } },
 };
 
 const photoVariants: Variants = {
@@ -23,19 +21,14 @@ const photoVariants: Variants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.5, ease: "easeOut" as const },
+    transition: { duration: 0.5, ease: "easeOut" },
   },
-  exit: {
-    opacity: 0,
-    y: -30,
-    scale: 0.95,
-    transition: { duration: 0.3 },
-  },
+  exit: { opacity: 0, y: -30, scale: 0.95, transition: { duration: 0.3 } },
 };
 
 const Portfolio = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,7 +40,6 @@ const Portfolio = () => {
         const data: Photo[] = await response.json();
         setPhotos(data);
       } catch (err: any) {
-        console.error(err);
         setError(err.message || "Coś poszło nie tak");
       } finally {
         setLoading(false);
@@ -59,7 +51,7 @@ const Portfolio = () => {
 
   return (
     <div className="w-full bg-[#faf9f6] flex justify-center pb-16">
-      <div className="max-w-[82.5rem] flex flex-col items-center font-family-Geologica px-4">
+      <div className="max-w-[82.5rem] flex flex-col items-center px-4">
         <h1 className="uppercase text-black mt-16 text-4xl sm:text-5xl md:text-6xl">
           portfolio
         </h1>

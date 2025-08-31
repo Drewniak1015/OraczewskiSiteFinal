@@ -25,9 +25,7 @@ const AdminLogin = () => {
       if (res.ok) {
         localStorage.setItem("adminToken", data.token);
         navigate("/panel");
-      } else {
-        setError(data.message || "Niepoprawny login lub hasło");
-      }
+      } else setError(data.message || "Niepoprawny login lub hasło");
     } catch (err) {
       setError("Błąd serwera. Spróbuj ponownie później.");
     } finally {

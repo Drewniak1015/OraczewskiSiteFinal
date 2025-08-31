@@ -1,5 +1,3 @@
-// index.js
-
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -8,14 +6,20 @@ const cloudinary = require("cloudinary").v2;
 // Tworzymy aplikację Express
 const app = express();
 
-// Render automatycznie ustawia PORT w process.env.PORT
+// Port Render ustawia w process.env.PORT
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+// Tutaj wpisz URL swojego frontendu na Render/GitHub Pages
+app.use(
+  cors({
+    origin: ["https://twoj-frontend.onrender.com", "http://localhost:3000"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-// Zmienne środowiskowe z Render (dodaj w Dashboard → Environment Variables)
+// Zmienne środowiskowe (dodaj w panelu Render)
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -25,7 +29,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Endpoint logowania admina
+// Endpoint logowania
 app.post("/api/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
@@ -35,11 +39,11 @@ app.post("/api/admin/login", (req, res) => {
   }
 });
 
-// Konfiguracja multer do uploadu plików
+// Konfiguracja multer
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Upload zdjęcia do Cloudinary
+// Upload zdjęcia
 app.post("/api/photos/upload", upload.single("photo"), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: "Brak pliku" });
 
@@ -66,7 +70,7 @@ app.post("/api/photos/upload", upload.single("photo"), async (req, res) => {
   }
 });
 
-// Pobieranie listy zdjęć z Cloudinary
+// Lista zdjęć
 app.get("/api/photos/list", async (req, res) => {
   try {
     const result = await cloudinary.api.resources({
@@ -86,7 +90,7 @@ app.get("/api/photos/list", async (req, res) => {
   }
 });
 
-// Usuwanie zdjęcia po public_id
+// Usuwanie zdjęcia
 app.delete("/api/photos/delete/:public_id", async (req, res) => {
   try {
     const publicId = decodeURIComponent(req.params.public_id);
@@ -109,5 +113,5 @@ app.delete("/api/photos/delete/:public_id", async (req, res) => {
 
 // Start serwera
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Serwer działa na porcie ${PORT}`);
 });
